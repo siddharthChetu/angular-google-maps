@@ -47,6 +47,10 @@ export class PolylineManager {
     return m.then((l: Polyline) => { return this._zone.run(() => { l.setPath(path); }); });
   }
 
+  updateClickable(line: AgmPolyline): Promise<void> {
+    return this._polylines.get(line).then((l: Polyline) => l.setClickable(line.clickable));
+  }
+
   setPolylineOptions(line: AgmPolyline, options: {[propName: string]: any}):
       Promise<void> {
     return this._polylines.get(line).then((l: Polyline) => { l.setOptions(options); });

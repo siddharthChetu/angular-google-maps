@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { PolyMouseEvent } from '../services/google-maps-types';
 import { PolylineManager } from '../services/managers/polyline-manager';
 import { AgmPolylinePoint } from './polyline-point';
+import {AgmInfoWindow} from './info-window';
 
 let polylineId = 0;
 /**
@@ -34,7 +35,9 @@ let polylineId = 0;
  * ```
  */
 @Directive({
-  selector: 'agm-polyline'
+  selector: 'agm-polyline',
+  inputs: ['openInfoWindow'],
+  outputs: ['polyClick']
 })
 export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   /**
@@ -89,9 +92,19 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
   @Input() zIndex: number;
 
   /**
+   * Whether to automatically open the child info window when the marker is clicked.
+   */
+  @Input() openInfoWindow: boolean = true;
+
+  /**
    * This event is fired when the DOM click event is fired on the Polyline.
    */
   @Output() lineClick: EventEmitter<PolyMouseEvent> = new EventEmitter<PolyMouseEvent>();
+
+  /**
+   * This event emitter gets emitted when the user clicks on the marker.
+   */
+  @Output() polyClick: EventEmitter<void> = new EventEmitter<void>();
 
   /**
    * This event is fired when the DOM dblclick event is fired on the Polyline.
@@ -147,9 +160,10 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
    * @internal
    */
   @ContentChildren(AgmPolylinePoint) points: QueryList<AgmPolylinePoint>;
+  @ContentChildren(AgmInfoWindow) infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
 
   private static _polylineOptionsAttributes: Array<string> = [
-    'draggable', 'editable', 'visible', 'geodesic', 'strokeColor', 'strokeOpacity', 'strokeWeight',
+    'draggable', 'clickable', 'editable', 'visible', 'geodesic', 'strokeColor', 'strokeOpacity', 'strokeWeight',
     'zIndex'
   ];
 
@@ -161,6 +175,8 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
 
   /** @internal */
   ngAfterContentInit() {
+    this.handleInfoWindowUpdate();
+    this.infoWindow.changes.subscribe(() => this.handleInfoWindowUpdate());
     if (this.points.length) {
       this.points.forEach((point: AgmPolylinePoint) => {
         const s = point.positionChanged.subscribe(
@@ -176,10 +192,22 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
     this._polylineManager.updatePolylinePoints(this);
   }
 
+  private handleInfoWindowUpdate() {
+    if (this.infoWindow.length > 1) {
+      throw new Error('Expected no more than one info window.');
+    }
+    this.infoWindow.forEach(polyLine => {
+      polyLine.hostPolyLine = this;
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges): any {
     if (!this._polylineAddedToManager) {
       this._init();
       return;
+    }
+    if (changes['clickable']) {
+      this._polylineManager.updateClickable(this);
     }
 
     let options: {[propName: string]: any} = {};
@@ -197,7 +225,12 @@ export class AgmPolyline implements OnDestroy, OnChanges, AfterContentInit {
 
   private _addEventListeners() {
     const handlers = [
-      {name: 'click', handler: (ev: PolyMouseEvent) => this.lineClick.emit(ev)},
+      {name: 'click', handler: () => {
+        if (this.openInfoWindow) {
+         this.infoWindow.forEach(infoWindow => infoWindow.open());
+        }
+        this.polyClick.emit(null);
+      }},
       {name: 'dblclick', handler: (ev: PolyMouseEvent) => this.lineDblClick.emit(ev)},
       {name: 'drag', handler: (ev: MouseEvent) => this.lineDrag.emit(ev)},
       {name: 'dragend', handler: (ev: MouseEvent) => this.lineDragEnd.emit(ev)},

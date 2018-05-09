@@ -39,7 +39,7 @@ let markerId = 0;
   selector: 'agm-marker',
   inputs: [
     'latitude', 'longitude', 'title', 'label', 'draggable: markerDraggable', 'iconUrl',
-    'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation'
+    'openInfoWindow', 'opacity', 'visible', 'zIndex', 'animation', 'borderStyle', 'borderWidth', 'borderColor', 'border'
   ],
   outputs: ['markerClick', 'dragEnd', 'mouseOver', 'mouseOut']
 })
@@ -58,6 +58,26 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
    * The title of the marker.
    */
   @Input() title: string;
+
+  /**
+   * The border Style of the marker.
+   */
+  @Input() border: string;
+
+  /**
+   * The border Style of the marker.
+   */
+  @Input() borderStyle: string;
+
+  /**
+   * The border Width of the marker.
+   */
+  @Input() borderWidth: string;
+
+  /**
+   * The border Color of the marker.
+   */
+  @Input() borderColor: string;
 
   /**
    * The label (a single uppercase character) for the marker.
@@ -172,6 +192,18 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
     }
     if (changes['title']) {
       this._markerManager.updateTitle(this);
+    }
+    if (changes['border']) {
+      this._markerManager.updateBorder(this);
+    }
+    if (changes['borderStyle']) {
+      this._markerManager.updateBorderStyle(this);
+    }
+    if (changes['borderWidth']) {
+      this._markerManager.updateBorderWidth(this);
+    }
+    if (changes['borderColor']) {
+      this._markerManager.updateBorderColor(this);
     }
     if (changes['label']) {
       this._markerManager.updateLabel(this);

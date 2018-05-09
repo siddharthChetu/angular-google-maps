@@ -39,6 +39,22 @@ export class MarkerManager {
     return this._markers.get(marker).then((m: Marker) => m.setTitle(marker.title));
   }
 
+  updateBorder(marker: AgmMarker): Promise<void> {
+    return this._markers.get(marker).then((m: Marker) => m.setBorder(marker.border));
+  }
+
+  updateBorderStyle(marker: AgmMarker): Promise<void> {
+    return this._markers.get(marker).then((m: Marker) => m.setBorderStyle(marker.borderStyle));
+  }
+
+  updateBorderWidth(marker: AgmMarker): Promise<void> {
+    return this._markers.get(marker).then((m: Marker) => m.setBorderWidth(marker.borderWidth));
+  }
+
+  updateBorderColor(marker: AgmMarker): Promise<void> {
+    return this._markers.get(marker).then((m: Marker) => m.setBorderColor(marker.borderColor));
+  }
+
   updateLabel(marker: AgmMarker): Promise<void> {
     return this._markers.get(marker).then((m: Marker) => { m.setLabel(marker.label); });
   }
@@ -52,7 +68,7 @@ export class MarkerManager {
   }
 
   updateOpacity(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: Marker) => m.setOpacity(marker.opacity));
+    return this._markers.get(marker).then((m: Marker) => m.setOpacity(null));
   }
 
   updateVisible(marker: AgmMarker): Promise<void> {
@@ -87,10 +103,12 @@ export class MarkerManager {
       visible: marker.visible,
       zIndex: marker.zIndex,
       title: marker.title,
+      borderStyle: marker.borderStyle,
+      borderWidth: marker.borderWidth,
+      borderColor: marker.borderColor,
       clickable: marker.clickable,
       animation: (typeof marker.animation === 'string') ? google.maps.Animation[marker.animation] : marker.animation
     });
-
     this._markers.set(marker, markerPromise);
   }
 

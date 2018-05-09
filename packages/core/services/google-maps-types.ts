@@ -27,6 +27,10 @@ export interface Marker extends MVCObject {
   setMap(map: GoogleMap): void;
   setPosition(latLng: LatLng|LatLngLiteral): void;
   setTitle(title: string): void;
+  setBorder(border: string): void;
+  setBorderStyle(borderStyle: string): void;
+  setBorderWidth(borderWidth: string): void;
+  setBorderColor(borderColor: string): void;
   setLabel(label: string|MarkerLabel): void;
   setDraggable(draggable: boolean): void;
   setIcon(icon: string): void;
@@ -50,6 +54,10 @@ export interface MarkerOptions {
   zIndex?: number;
   clickable: boolean;
   animation?: any;
+  borderStyle?: string;
+  borderWidth?: string;
+  borderColor?: string;
+  border?: string;
 }
 
 export interface MarkerLabel {
@@ -58,6 +66,7 @@ export interface MarkerLabel {
   fontSize: string;
   fontWeight: string;
   text: string;
+  className: string;
 }
 
 export interface Circle extends MVCObject {
@@ -273,6 +282,7 @@ export interface Polyline extends MVCObject {
   setOptions(options: PolylineOptions): void;
   setPath(path: Array<LatLng|LatLngLiteral>): void;
   setVisible(visible: boolean): void;
+  setClickable(clickable: boolean): void;
 }
 
 /**

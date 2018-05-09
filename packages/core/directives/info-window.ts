@@ -3,6 +3,7 @@ import { Component, ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, Simp
 import {InfoWindowManager} from '../services/managers/info-window-manager';
 
 import {AgmMarker} from './marker';
+import {AgmPolyline} from './polyline';
 
 let infoWindowId = 0;
 
@@ -77,6 +78,11 @@ export class AgmInfoWindow implements OnDestroy, OnChanges, OnInit {
    * Holds the marker that is the host of the info window (if available)
    */
   hostMarker: AgmMarker;
+
+  /**
+   * Holds the marker that is the host of the info window (if available)
+   */
+  hostPolyLine: AgmPolyline;
 
   /**
    * Holds the native element that is used for the info window content.
